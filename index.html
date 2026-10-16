@@ -192,8 +192,10 @@
         </div>
         <button onclick="placeOrder()" class="w-full bg-brand text-white py-3 rounded-xl font-bold text-xs shadow-lg">Confirm & Place Order</button>
       </div>
-          </div>
-      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    </div>
+
+    <!-- Firebase & App Script -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
       const firebaseConfig = {
@@ -325,113 +327,4 @@
 
       function applyCoupon() {
         const code = document.getElementById('couponCode').value.trim().toUpperCase();
-        const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-        discountAmount = (code === 'VISHAL10') ? subtotal * 0.10 : 0;
-        alert(discountAmount > 0 ? 'Coupon Applied: 10% Off!' : 'Invalid Coupon');
-        openCart();
-      }
-
-      async function placeOrder() {
-        if(cart.length === 0) { alert('Cart is empty'); return; }
-        const name = document.getElementById('custName').value;
-        const phone = document.getElementById('custPhone').value;
-        const address = document.getElementById('custAddress').value;
-        if(!name || !phone || !address) { alert('Fill delivery details'); return; }
-
-        await db.collection("orders").add({
-          customerName: name, customerPhone: phone, address: address, items: cart,
-          totalAmount: cart.reduce((sum, i) => sum + (i.price * i.qty), 0) - discountAmount,
-          status: 'Pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert('Order Placed Successfully!');
-        cart = []; discountAmount = 0;
-        document.getElementById('cartBadge').innerText = '0';
-        closeCart(); navigate('orders');
-      }
-
-      function loadUserOrders() {
-        const list = document.getElementById('myOrdersList');
-        db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-          let html = '';
-          snapshot.forEach(doc => {
-            const o = doc.data();
-            html += `<div class="bg-white p-3 rounded-xl border text-xs space-y-1 shadow-sm"><div class="flex justify-between font-bold"><span>Order ID: ${doc.id.slice(0,6)}</span><span class="text-brand">${o.status}</span></div><p class="text-gray-600">Total: ₹${o.totalAmount} | Addr: ${o.address}</p></div>`;
-          });
-          list.innerHTML = html || `<p class="text-xs text-gray-500 text-center py-4">No orders found.</p>`;
-        });
-      }
-
-      document.getElementById('adminAddForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await db.collection("products").add({
-          name: document.getElementById('admName').value,
-          price: parseFloat(document.getElementById('admPrice').value),
-          category: document.getElementById('admCategory').value,
-          image: document.getElementById('admImage').value,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert('Product Added Successfully!');
-        e.target.reset();
-      });
-
-      function loadAdminOrders() {
-        const list = document.getElementById('adminOrdersList');
-        db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-          let html = '';
-          snapshot.forEach(doc => {
-            const o = doc.data();
-            html += `
-              <div class="bg-gray-50 p-2.5 rounded border space-y-1">
-                <div><b>${o.customerName}</b> (${o.customerPhone})</div>
-                <p class="text-gray-600">Addr: ${o.address} | Total: ₹${o.totalAmount}</p>
-                <div class="flex justify-between items-center pt-1 border-t">
-                  <span class="font-bold text-brand">Status: ${o.status}</span>
-                  <div class="space-x-1">
-                    <button onclick="updateStatus('${doc.id}', 'Shipped')" class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px]">Ship</button>
-                    <button onclick="updateStatus('${doc.id}', 'Delivered')" class="bg-green-600 text-white px-2 py-0.5 rounded text-[10px]">Deliver</button>
-                  </div>
-                </div>
-              </div>
-            `;
-          });
-          list.innerHTML = html || `<p class="text-gray-500 text-center py-2">No active orders.</p>`;
-        });
-      }
-
-      async function updateStatus(id, status) {
-        await db.collection("orders").doc(id).update({ status: status });
-        alert('Order updated to ' + status);
-      }
-
-      function handleLogin() {
-        const phone = document.getElementById('authPhone').value;
-        const pass = document.getElementById('authPass').value;
-        if(phone.length < 10 || !pass) { alert('Enter valid details'); return; }
-        localStorage.setItem('vishal_user', phone);
-        checkAuthSession();
-      }
-
-      function handleLogout() { localStorage.removeItem('vishal_user'); checkAuthSession(); }
-      function checkAuthSession() {
-        const user = localStorage.getItem('vishal_user');
-        if(user) {
-          document.getElementById('guestBox').classList.add('hidden');
-          document.getElementById('userBox').classList.remove('hidden');
-          document.getElementById('profilePhone').innerText = "+91 " + user;
-        } else {
-          document.getElementById('guestBox').classList.remove('hidden');
-          document.getElementById('userBox').classList.add('hidden');
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        fetchProducts();
-        if(location.hash === '#admin') navigate('admin');
-      });
-      window.addEventListener('hashchange', () => {
-        if(location.hash === '#admin') navigate('admin');
-      });
-    </script>
-</body>
-</html>
-
+        const subtotal = cart.reduce((sum, i) => sum + (i.price * i
