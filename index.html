@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vishal Jewellers - Pure Gold & Diamond Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { brand: { DEFAULT: '#800020', dark: '#5C0017', light: '#A0153E', gold: '#D4AF37', goldLight: '#F3E5AB' } }
+          }
+        }
+      }
+    </script>
+    <style>::-webkit-scrollbar { display: none; }</style>
+</head>
+<body class="bg-gray-100 text-gray-800 pb-24 font-sans">
+
+    <!-- Store Header -->
+    <header class="bg-brand text-white sticky top-0 z-40 shadow-lg">
+      <div class="max-w-md mx-auto p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="navigate('home')">
+          <i class="fa-solid fa-gem text-brand-gold text-2xl"></i>
+          <div>
+            <h1 class="text-base font-bold tracking-wide text-brand-goldLight leading-tight">Vishal Jewellers</h1>
+            <p class="text-[9px] tracking-widest uppercase text-gray-200">विशाल ज्वेलर्स</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button onclick="openCart()" class="relative text-white"><i class="fa-solid fa-cart-shopping text-xl"></i><span id="cartBadge" class="absolute -top-2 -right-2 bg-brand-gold text-brand-dark text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span></button>
+        </div>
+      </div>
+      <div class="bg-brand-dark text-brand-goldLight text-[11px] py-1 px-4 flex justify-between items-center border-t border-brand-light">
+        <span><i class="fa-solid fa-coins mr-1"></i> 24K Gold: ₹72,500/10g</span>
+        <span><i class="fa-solid fa-certificate mr-1 text-brand-gold"></i> BIS Hallmark 100% Pure</span>
+      </div>
+    </header>
+
+    <!-- Home View -->
+    <div id="viewHome" class="max-w-md mx-auto p-4 space-y-4">
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+        <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Search Necklace, Ring, Bangles..." class="w-full pl-9 pr-4 py-2 rounded-lg text-sm bg-white focus:outline-none shadow-inner border">
+      </div>
+      <div class="relative bg-gradient-to-r from-brand to-brand-light text-white rounded-2xl p-4 shadow-xl overflow-hidden">
+        <div class="absolute -right-4 -bottom-8 opacity-20 text-brand-gold text-8xl"><i class="fa-solid fa-crown"></i></div>
+        <span class="bg-brand-gold text-brand-dark font-black text-[9px] px-2 py-0.5 rounded-full uppercase">Festival Maha Sale</span>
+        <h2 class="text-lg font-extrabold mt-1 text-brand-goldLight">20% OFF on Making Charges</h2>
+        <p class="text-[11px] text-gray-200 mt-1">Use Coupon <b class="text-brand-gold">VISHAL10</b> at checkout</p>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-sm font-bold text-gray-800">Trending Jewellery Collection</h3>
+          <span id="prodCount" class="text-[10px] bg-brand-goldLight text-brand-dark px-2 py-0.5 rounded font-bold">0 Items</span>
+        </div>
+        <div id="productGrid" class="grid grid-cols-2 gap-3">
+          <div class="col-span-2 text-center py-10">
+            <i class="fa-solid fa-spinner fa-spin text-2xl text-brand-gold"></i>
+            <p class="text-xs text-gray-500 mt-2">Loading Catalogue...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories View -->
+    <div id="viewCategories" class="max-w-md mx-auto p-4 space-y-4 hidden">
+      <h3 class="text-sm font-bold">Jewellery Categories</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div onclick="filterByCategory('Necklace')" class="bg-white p-4 rounded-xl border text-center shadow-sm cursor-pointer"><i class="fa-solid fa-gem text-brand text-2xl mb-2"></i><p class="text-xs font-bold">Necklaces</p></div>
+        <div onclick="filterByCategory('Ring')" class="bg-white p-4 rounded-xl border text-center shadow-sm cursor-pointer"><i class="fa-solid fa-ring text-brand text-2xl mb-2"></i><p class="text-xs font-bold">Rings</p></div>
+        <div onclick="filterByCategory('Earrings')" class="bg-white p-4 rounded-xl border text-center shadow-sm cursor-pointer"><i class="fa-solid fa-circle-dot text-brand text-2xl mb-2"></i><p class="text-xs font-bold">Earrings</p></div>
+        <div onclick="filterByCategory('Bangles')" class="bg-white p-4 rounded-xl border text-center shadow-sm cursor-pointer"><i class="fa-solid fa-circle-notch text-brand text-2xl mb-2"></i><p class="text-xs font-bold">Bangles</p></div>
+      </div>
+    </div>
+
+    <!-- My Orders View -->
+    <div id="viewOrders" class="max-w-md mx-auto p-4 space-y-4 hidden">
+      <h3 class="text-sm font-bold">My Orders & Tracking</h3>
+      <div id="myOrdersList" class="space-y-3">
+        <p class="text-xs text-gray-500 text-center py-6">No orders placed yet.</p>
+      </div>
+    </div>
+
+    <!-- Account View -->
+    <div id="viewAccount" class="max-w-md mx-auto p-4 space-y-4 hidden">
+      <div class="bg-white rounded-2xl p-5 shadow-sm border text-center">
+        <div id="guestBox">
+          <div class="w-16 h-16 bg-brand-goldLight text-brand-dark rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold"><i class="fa-solid fa-user-lock"></i></div>
+          <h3 class="text-sm font-bold">Customer Portal</h3>
+          <p class="text-xs text-gray-500 mb-4">Instant Password Login (No OTP)</p>
+          <input type="tel" id="authPhone" placeholder="Mobile Number" class="w-full border p-2.5 rounded-lg text-sm mb-3">
+          <input type="password" id="authPass" placeholder="Password" class="w-full border p-2.5 rounded-lg text-sm mb-4">
+          <button onclick="handleLogin()" class="w-full bg-brand text-white py-2.5 rounded-xl font-bold text-xs shadow">Login / Register</button>
+        </div>
+        <div id="userBox" class="hidden text-left">
+          <div class="flex items-center space-x-3 border-b pb-3">
+            <div class="w-12 h-12 bg-brand text-brand-gold rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-user"></i></div>
+            <div>
+              <h4 id="profilePhone" class="text-xs font-bold text-gray-800"></h4>
+              <p class="text-[10px] text-green-600 font-semibold">Verified Buyer</p>
+            </div>
+          </div>
+          <button onclick="handleLogout()" class="mt-4 w-full bg-red-50 text-red-600 border border-red-200 py-2 rounded-xl text-xs font-bold">Logout Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secure Admin View (#admin) -->
+    <div id="viewAdmin" class="max-w-md mx-auto p-4 space-y-6 hidden">
+      <div id="adminLoginBox" class="bg-white p-6 rounded-2xl shadow-xl border text-center">
+        <i class="fa-solid fa-shield-halved text-4xl text-brand mb-2"></i>
+        <h2 class="text-lg font-bold mb-1">Secure Admin Login</h2>
+        <p class="text-xs text-gray-500 mb-4">Enter master password (admin123)</p>
+        <input type="password" id="adminPassInput" placeholder="Master Password" class="w-full border p-3 rounded-xl text-sm mb-3">
+        <button onclick="verifyAdminLogin()" class="w-full bg-brand text-white py-3 rounded-xl font-bold text-xs shadow">Login to Dashboard</button>
+      </div>
+
+      <div id="adminDashboard" class="space-y-4 hidden">
+        <div class="bg-brand p-4 rounded-2xl text-white flex justify-between items-center shadow-lg">
+          <div>
+            <h2 class="text-sm font-bold text-brand-gold">Vishal Jewellers Admin</h2>
+            <p class="text-[10px] text-gray-200">Inventory & Delivery Control</p>
+          </div>
+          <button onclick="logoutAdmin()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Logout</button>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm border space-y-3">
+          <h3 class="text-xs font-bold text-gray-800 border-b pb-2"><i class="fa-solid fa-box mr-1"></i> Add Product & Image Upload</h3>
+          <form id="adminAddForm" class="space-y-3">
+            <input type="text" id="admName" placeholder="Jewellery Name *" required class="w-full border p-2 text-xs rounded">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="admPrice" placeholder="Price (₹) *" required class="border p-2 text-xs rounded">
+              <select id="admCategory" class="border p-2 text-xs rounded bg-white">
+                <option value="Necklace">Necklace</option>
+                <option value="Ring">Ring</option>
+                <option value="Earrings">Earrings</option>
+                <option value="Bangles">Bangles</option>
+              </select>
+            </div>
+            <input type="url" id="admImage" placeholder="Image Direct URL *" required class="w-full border p-2 text-xs rounded">
+            <button type="submit" class="w-full bg-brand text-white py-2 rounded-lg font-bold text-xs shadow">Save Product to Live Store</button>
+          </form>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm border space-y-3">
+          <h3 class="text-xs font-bold text-gray-800 border-b pb-2"><i class="fa-solid fa-truck-fast mr-1"></i> Customer Orders & Status</h3>
+          <div id="adminOrdersList" class="space-y-2 text-xs">Loading orders...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 max-w-md mx-auto shadow-lg">
+      <div class="grid grid-cols-4 py-2 text-center">
+        <button onclick="navigate('home')" class="flex flex-col items-center text-brand" id="navHome"><i class="fa-solid fa-house text-base"></i><span class="text-[10px] mt-1 font-semibold">Home</span></button>
+        <button onclick="navigate('categories')" class="flex flex-col items-center text-gray-400" id="navCategories"><i class="fa-solid fa-layer-group text-base"></i><span class="text-[10px] mt-1 font-semibold">Categories</span></button>
+        <button onclick="navigate('orders')" class="flex flex-col items-center text-gray-400" id="navOrders"><i class="fa-solid fa-box-archive text-base"></i><span class="text-[10px] mt-1 font-semibold">My Orders</span></button>
+        <button onclick="navigate('account')" class="flex flex-col items-center text-gray-400" id="navAccount"><i class="fa-solid fa-user text-base"></i><span class="text-[10px] mt-1 font-semibold">Account</span></button>
+      </div>
+    </nav>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex flex-col justify-end">
+      <div class="bg-white rounded-t-3xl p-5 max-w-md w-full mx-auto max-h-[85vh] overflow-y-auto space-y-4">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="font-bold text-sm">Shopping Cart & Checkout</h3>
+          <button onclick="closeCart()" class="text-gray-500 font-bold">✕</button>
+        </div>
+        <div id="cartItemsList" class="space-y-3"></div>
+        <div class="space-y-2 text-xs border-t pt-3">
+          <input type="text" id="custName" placeholder="Full Name *" class="w-full border p-2 rounded">
+          <input type="tel" id="custPhone" placeholder="Mobile Number *" class="w-full border p-2 rounded">
+          <textarea id="custAddress" placeholder="Delivery Address *" class="w-full border p-2 rounded h-16"></textarea>
+          <div class="flex space-x-2">
+            <input type="text" id="couponCode" placeholder="Coupon Code (VISHAL10)" class="border p-2 rounded flex-1 uppercase">
+            <button onclick="applyCoupon()" class="bg-gray-800 text-white px-4 rounded text-xs font-bold">Apply</button>
+          </div>
+        </div>
+        <div class="border-t pt-2 space-y-1 text-xs">
+          <div class="flex justify-between"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+          <div class="flex justify-between text-green-600"><span>Discount</span><span id="cartDiscount">-₹0</span></div>
+          <div class="flex justify-between font-bold text-sm"><span>Total Payable</span><span id="cartTotal" class="text-brand font-black">₹0</span></div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-xl border text-center space-y-1">
+          <p class="text-[11px] font-bold text-gray-700">Scan & Pay via UPI / QR Code</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=upi://pay?pa=vishaljewellers@upi&pn=VishalJewellers" class="w-20 h-20 mx-auto border rounded bg-white p-1">
+          <p class="text-[10px] text-gray-500">UPI ID: <b class="text-gray-800">vishaljewellers@upi</b></p>
+        </div>
+        <button onclick="placeOrder()" class="w-full bg-brand text-white py-3 rounded-xl font-bold text-xs shadow-lg">Confirm & Place Order</button>
+      </div>
+  </div>
+      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "BDYXKdbnpEh_nusOsja8TxdGpwB7FkT1YTIZZX3qRp8FjfhlmxMktjjKYNuEjvfYyOsGIWZHXYN-izmhx5coOgc",
+        authDomain: "vishal-jewellers-7fe9e.firebaseapp.com",
+        projectId: "vishal-jewellers-7fe9e",
+        storageBucket: "vishal-jewellers-7fe9e.appspot.com",
+        messagingSenderId: "939964431743",
+        appId: "1:939964431743:android:815d14082d3cebad49ee4a"
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      let cart = [];
+      let allProducts = [];
+      let discountAmount = 0;
+
+      function navigate(viewName) {
+        ['home', 'categories', 'orders', 'account', 'admin'].forEach(v => {
+          const el = document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1));
+          if(el) el.classList.add('hidden');
+        });
+        ['Home', 'Categories', 'Orders', 'Account'].forEach(v => {
+          const btn = document.getElementById('nav' + v);
+          if(btn) { btn.classList.remove('text-brand'); btn.classList.add('text-gray-400'); }
+        });
+        if(viewName === 'home') { document.getElementById('viewHome').classList.remove('hidden'); document.getElementById('navHome').classList.add('text-brand'); }
+        if(viewName === 'categories') { document.getElementById('viewCategories').classList.remove('hidden'); document.getElementById('navCategories').classList.add('text-brand'); }
+        if(viewName === 'orders') { document.getElementById('viewOrders').classList.remove('hidden'); document.getElementById('navOrders').classList.add('text-brand'); loadUserOrders(); }
+        if(viewName === 'account') { document.getElementById('viewAccount').classList.remove('hidden'); document.getElementById('navAccount').classList.add('text-brand'); checkAuthSession(); }
+        if(viewName === 'admin') { 
+          document.getElementById('viewAdmin').classList.remove('hidden'); 
+          checkAdminSession();
+        }
+      }
+
+      function verifyAdminLogin() {
+        const pass = document.getElementById('adminPassInput').value;
+        if(pass === 'admin123') {
+          localStorage.setItem('admin_auth', 'true');
+          checkAdminSession();
+        } else {
+          alert('Incorrect Password! Use: admin123');
+        }
+      }
+
+      function checkAdminSession() {
+        if(localStorage.getItem('admin_auth') === 'true') {
+          document.getElementById('adminLoginBox').classList.add('hidden');
+          document.getElementById('adminDashboard').classList.remove('hidden');
+          loadAdminOrders();
+        } else {
+          document.getElementById('adminLoginBox').classList.remove('hidden');
+          document.getElementById('adminDashboard').classList.add('hidden');
+        }
+      }
+
+      function logoutAdmin() {
+        localStorage.removeItem('admin_auth');
+        checkAdminSession();
+      }
+
+      function fetchProducts() {
+        db.collection("products").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+          allProducts = [];
+          snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
+          renderProducts(allProducts);
+        });
+      }
+
+      function renderProducts(products) {
+        const grid = document.getElementById('productGrid');
+        document.getElementById('prodCount').innerText = products.length + " Items";
+        if(products.length === 0) {
+          grid.innerHTML = `<div class="col-span-2 text-center py-10 text-xs text-gray-500">No products available.</div>`;
+          return;
+        }
+        grid.innerHTML = products.map(p => `
+          <div class="bg-white rounded-xl p-2 border shadow-sm flex flex-col justify-between">
+            <img src="${p.image}" class="w-full h-36 object-cover rounded-lg mb-2" onerror="this.src='https://via.placeholder.com/150'">
+            <div>
+              <h4 class="text-xs font-bold text-gray-800 line-clamp-1">${p.name}</h4>
+              <span class="text-[10px] text-gray-400 uppercase">${p.category}</span>
+              <p class="text-sm font-black text-brand mt-1">₹${p.price.toLocaleString('en-IN')}</p>
+            </div>
+            <button onclick="addToCart('${p.id}')" class="mt-2 w-full bg-brand text-white py-1.5 rounded-lg text-[11px] font-bold shadow">Add to Cart</button>
+          </div>
+        `).join('');
+      }
+
+      function filterProducts() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)));
+      }
+
+      function filterByCategory(cat) {
+        navigate('home');
+        renderProducts(allProducts.filter(p => p.category === cat));
+      }
+
+      function addToCart(id) {
+        const prod = allProducts.find(p => p.id === id);
+        if(!prod) return;
+        const exist = cart.find(item => item.id === id);
+        if(exist) { exist.qty += 1; } else { cart.push({ ...prod, qty: 1 }); }
+        document.getElementById('cartBadge').innerText = cart.reduce((sum, i) => sum + i.qty, 0);
+        alert('Added to cart successfully!');
+      }
+
+      function openCart() {
+        const list = document.getElementById('cartItemsList');
+        if(cart.length === 0) {
+          list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">Your cart is empty.</p>`;
+        } else {
+          list.innerHTML = cart.map((item, idx) => `
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <div><h5 class="font-bold">${item.name}</h5><p class="text-gray-500">₹${item.price} x ${item.qty}</p></div>
+              <button onclick="cart.splice(${idx},1);openCart();" class="text-red-500 font-bold"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `).join('');
+        }
+        const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+        document.getElementById('cartSubtotal').innerText = '₹' + subtotal.toLocaleString('en-IN');
+        document.getElementById('cartDiscount').innerText = '-₹' + discountAmount.toLocaleString('en-IN');
+        document.getElementById('cartTotal').innerText = '₹' + (subtotal - discountAmount).toLocaleString('en-IN');
+        document.getElementById('cartModal').classList.remove('hidden');
+      }
+
+      function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
+
+      function applyCoupon() {
+        const code = document.getElementById('couponCode').value.trim().toUpperCase();
+        const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+        discountAmount = (code === 'VISHAL10') ? subtotal * 0.10 : 0;
+        alert(discountAmount > 0 ? 'Coupon Applied: 10% Off!' : 'Invalid Coupon');
+        openCart();
+      }
+
+      async function placeOrder() {
+        if(cart.length === 0) { alert('Cart is empty'); return; }
+        const name = document.getElementById('custName').value;
+        const phone = document.getElementById('custPhone').value;
+        const address = document.getElementById('custAddress').value;
+        if(!name || !phone || !address) { alert('Fill delivery details'); return; }
+
+        await db.collection("orders").add({
+          customerName: name, customerPhone: phone, address: address, items: cart,
+          totalAmount: cart.reduce((sum, i) => sum + (i.price * i.qty), 0) - discountAmount,
+          status: 'Pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert('Order Placed Successfully!');
+        cart = []; discountAmount = 0;
+        document.getElementById('cartBadge').innerText = '0';
+        closeCart(); navigate('orders');
+      }
+
+      function loadUserOrders() {
+        const list = document.getElementById('myOrdersList');
+        db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+          let html = '';
+          snapshot.forEach(doc => {
+            const o = doc.data();
+            html += `<div class="bg-white p-3 rounded-xl border text-xs space-y-1 shadow-sm"><div class="flex justify-between font-bold"><span>Order ID: ${doc.id.slice(0,6)}</span><span class="text-brand">${o.status}</span></div><p class="text-gray-600">Total: ₹${o.totalAmount} | Addr: ${o.address}</p></div>`;
+          });
+          list.innerHTML = html || `<p class="text-xs text-gray-500 text-center py-4">No orders found.</p>`;
+        });
+      }
+
+      document.getElementById('adminAddForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await db.collection("products").add({
+          name: document.getElementById('admName').value,
+          price: parseFloat(document.getElementById('admPrice').value),
+          category: document.getElementById('admCategory').value,
+          image: document.getElementById('admImage').value,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert('Product Added Successfully!');
+        e.target.reset();
+      });
+
+      function loadAdminOrders() {
+        const list = document.getElementById('adminOrdersList');
+        db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+          let html = '';
+          snapshot.forEach(doc => {
+            const o = doc.data();
+            html += `
+              <div class="bg-gray-50 p-2.5 rounded border space-y-1">
+                <div><b>${o.customerName}</b> (${o.customerPhone})</div>
+                <p class="text-gray-600">Addr: ${o.address} | Total: ₹${o.totalAmount}</p>
+                <div class="flex justify-between items-center pt-1 border-t">
+                  <span class="font-bold text-brand">Status: ${o.status}</span>
+                  <div class="space-x-1">
+                    <button onclick="updateStatus('${doc.id}', 'Shipped')" class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px]">Ship</button>
+                    <button onclick="updateStatus('${doc.id}', 'Delivered')" class="bg-green-600 text-white px-2 py-0.5 rounded text-[10px]">Deliver</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          list.innerHTML = html || `<p class="text-gray-500 text-center py-2">No active orders.</p>`;
+        });
+      }
+
+      async function updateStatus(id, status) {
+        await db.collection("orders").doc(id).update({ status: status });
+        alert('Order updated to ' + status);
+      }
+
+      function handleLogin() {
+        const phone = document.getElementById('authPhone').value;
+        const pass = document.getElementById('authPass').value;
+        if(phone.length < 10 || !pass) { alert('Enter valid details'); return; }
+        localStorage.setItem('vishal_user', phone);
+        checkAuthSession();
+      }
+
+      function handleLogout() { localStorage.removeItem('vishal_user'); checkAuthSession(); }
+      function checkAuthSession() {
+        const user = localStorage.getItem('vishal_user');
+        if(user) {
+          document.getElementById('guestBox').classList.add('hidden');
+          document.getElementById('userBox').classList.remove('hidden');
+          document.getElementById('profilePhone').innerText = "+91 " + user;
+        } else {
+          document.getElementById('guestBox').classList.remove('hidden');
+          document.getElementById('userBox').classList.add('hidden');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        fetchProducts();
+        if(location.hash === '#admin') navigate('admin');
+      });
+      window.addEventListener('hashchange', () => {
+        if(location.hash === '#admin') navigate('admin');
+      });
+    </script>
+</body>
+</html>
