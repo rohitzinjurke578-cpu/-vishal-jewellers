@@ -1,0 +1,10 @@
+
+{% extends "base.html" %}{% block title %}{{ product.name }} — {{ shop_name }}{% endblock %}
+{% block content %}<div class="breadcrumbs"><a href="{{ url_for('index') }}">Home</a> / {{ product.category }} / {{ product.name }}</div>
+<div class="detail-layout"><div class="detail-gallery">
+{% if product.media %}{% for m in product.media %}{% if m.lower().endswith(('.mp4','.webm','.mov')) %}<video controls src="{{ m }}"></video>{% else %}<img src="{{ m }}" alt="{{ product.name }}">{% endif %}{% endfor %}
+{% elif product.image %}<img src="{{ product.image }}" alt="{{ product.name }}">{% else %}<div class="placeholder-image large">✦</div>{% endif %}
+</div><div class="detail-info"><span class="eyebrow">{{ product.category }}</span><h1>{{ product.name }}</h1><div class="price-line big"><strong>₹{{ '%.0f'|format(product.price) }}</strong>{% if product.mrp > product.price %}<del>₹{{ '%.0f'|format(product.mrp) }}</del><span class="discount-text">{{ product.discount }}% off</span>{% endif %}</div><p>{{ product.description or 'Everyday style at a great price.' }}</p>
+{% if product.size %}<p><b>Size:</b> {{ product.size }}</p>{% endif %}{% if product.color %}<p><b>Color:</b> {{ product.color }}</p>{% endif %}
+<p><b>Availability:</b> {% if product.stock > 0 %}<span class="in-stock">In Stock ({{ product.stock }})</span>{% else %}<span class="out-stock">Out of Stock</span>{% endif %}</p>
+<form method="post" action="{{ url_for('add_to_cart', product_id=product.id) }}"><button class="btn" {% if product.stock < 1 %}disabled{% endif %}>Add to Cart</button></form></div></div>{% endblock %}

@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}{% block title %}{{ shop_name }} — Online Shopping{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy"><span class="eyebrow">FESTIVE PICKS · DAILY DEALS</span><h1>Good finds.<br><em>Great prices.</em></h1><p>Fashion, beauty, home essentials और बहुत कुछ — एक ही जगह।</p><a class="btn light" href="#products">अभी खरीदें</a></div>
+  <div class="hero-art"><div class="sale-circle">SALE<br><strong>UP TO<br>50% OFF</strong></div><div class="hero-orb orb1">✦</div><div class="hero-orb orb2">✿</div></div>
+</section>
+<div class="trust-row"><span>↩️  Easy Returns</span><span>💵 Cash on Delivery</span><span>🏷️  Great Prices</span></div>
+<section class="section">
+  <div class="section-head"><div><span class="eyebrow">EXPLORE</span><h2>Shop by category</h2></div></div>
+  <div class="category-row">
+  <a class="category-chip" href="{{ url_for('index') }}">✨<span>All Products</span></a>
+  {% for cat in categories %}<a class="category-chip" href="{{ url_for('index', category=cat) }}">🛍️<span>{{ cat }}</span></a>{% endfor %}
+  </div>
+</section>
+<section class="section" id="products">
+  <div class="section-head"><div><span class="eyebrow">HANDPICKED FOR YOU</span><h2>Top deals for you</h2></div><form class="search-form" action="{{ url_for('index') }}"><input name="q" value="{{ search }}" placeholder="Search products..."><button>Search</button></form></div>
+  {% if products %}<div class="product-grid">
+  {% for p in products %}
+    <article class="product-card">
+      <a class="product-image" href="{{ url_for('product_detail', product_id=p.id) }}">
+      {% if p.image %}<img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy">{% else %}<div class="placeholder-image">✦<small>Product image</small></div>{% endif %}
+      {% if p.discount %}<span class="discount">{{ p.discount }}% OFF</span>{% endif %}
+      </a>
+      <div class="product-info"><span class="category-label">{{ p.category }}</span><a class="product-name" href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+      <div class="price-line"><strong>₹{{ '%.0f'|format(p.price) }}</strong>{% if p.mrp > p.price %}<del>₹{{ '%.0f'|format(p.mrp) }}</del>{% endif %}</div>
+      {% if p.stock > 0 %}<span class="stock in-stock">In Stock</span>{% else %}<span class="stock out-stock">Out of Stock</span>{% endif %}
+      <form method="post" action="{{ url_for('add_to_cart', product_id=p.id) }}"><button class="btn add-btn" {% if p.stock < 1 %}disabled{% endif %}>＋ Add to cart</button></form></div>
+    </article>
+  {% endfor %}</div>{% else %}<div class="empty-state"><div>🛍️</div><h3>अभी प्रोडक्ट नहीं हैं</h3><p>Admin panel में login करके अपने products और photos upload करें।</p><a class="btn" href="{{ url_for('admin_login') }}">Open Admin Panel</a></div>{% endif %}
+</section>
+{% endblock %}

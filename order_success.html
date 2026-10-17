@@ -1,0 +1,2 @@
+
+{% extends "base.html" %}{% block title %}Order Placed{% endblock %}{% block content %}<section class="section narrow empty-state"><div>✓</div><h1>Order received!</h1><p>Your order number is <b>#{{ order.id }}</b>.</p><p>Payment: {{ order.payment_method }} · Total: ₹{{ '%.0f'|format(order.total) }}</p><p>Order status: {{ order.status }}</p><a class="btn" href="{{ url_for('my_orders') }}">Track my orders</a><a class="text-link" href="{{ url_for('index') }}">Continue shopping</a></section>{% endblock %}

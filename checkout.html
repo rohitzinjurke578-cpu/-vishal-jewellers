@@ -1,0 +1,7 @@
+
+{% extends "base.html" %}{% block title %}Checkout{% endblock %}{% block content %}
+<section class="section narrow"><div class="section-head"><h1>Checkout</h1></div><div class="form-card"><form method="post" class="stack-form">
+<label>Full name<input required name="name" autocomplete="name"></label><label>Mobile number<input required name="phone" inputmode="tel" autocomplete="tel"></label><label>Delivery address<textarea required name="address" rows="3" autocomplete="street-address"></textarea></label>
+<label>Payment method<select name="payment_method"><option>Cash on Delivery</option><option>UPI (manual confirmation required)</option></select></label>
+<div class="total-row"><span>Order total</span><strong>₹{{ '%.0f'|format(total) }}</strong></div><button class="btn full">Place Order</button><p class="muted small">UPI option केवल order preference दर्ज करता है; यह अपने आप पैसे नहीं काटता। असली online payment के लिए payment gateway setup जरूरी है।</p>
+</form></div></section>{% endblock %}

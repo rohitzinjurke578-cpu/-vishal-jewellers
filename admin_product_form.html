@@ -1,0 +1,16 @@
+
+{% extends "admin_base.html" %}{% block title %}{{ 'Add' if is_new else 'Edit' }} Product{% endblock %}{% block page_heading %}{{ 'Add Product' if is_new else 'Edit Product' }}{% endblock %}{% block admin_content %}
+<form method="post" enctype="multipart/form-data" class="product-edit-layout"><section class="panel form-panel"><div class="panel-heading"><div><h3>Product information</h3><p>Required details and listing information</p></div></div>
+<div class="form-grid"><label class="span-2">Product name *<input required name="name" value="{{ product.name or '' }}" placeholder="e.g. Women's Printed Kurti"></label>
+<label>Sale price (₹) *<input required type="number" min="0" step="0.01" name="price" value="{{ product.price or 0 }}"></label><label>MRP (₹)<input type="number" min="0" step="0.01" name="mrp" value="{{ product.mrp or 0 }}"></label>
+<label>Category<input name="category" value="{{ product.category or 'General' }}" placeholder="Fashion, Beauty, Home"></label><label>Subcategory<input name="subcategory" value="{{ product.subcategory or '' }}" placeholder="Kurtis, Skincare..."></label>
+<label>Stock quantity<input type="number" min="0" step="1" name="stock" value="{{ product.stock or 0 }}"></label><label>Size variants<input name="size" value="{{ product.size or '' }}" placeholder="S, M, L, XL"></label><label class="span-2">Color variants<input name="color" value="{{ product.color or '' }}" placeholder="Red, Black, Blue"></label>
+<label class="span-2">Description<textarea name="description" rows="5" placeholder="Product details, material, care...">{{ product.description or '' }}</textarea></label></div></section>
+<section class="panel form-panel"><div class="panel-heading"><div><h3>Product gallery</h3><p>फोन की Gallery से multiple images या video चुनें</p></div></div>
+<label class="upload-zone"><span class="upload-symbol">⇧</span><b>Tap to choose photos/videos</b><small>JPG, PNG, WEBP, GIF, MP4, WEBM, MOV · max 20 MB total per request</small><input type="file" name="media" id="mediaInput" accept="image/*,video/mp4,video/webm,video/quicktime" multiple></label>
+<div id="previewGrid" class="preview-grid">{% for m in product.media %}<div class="preview-item">{% if m.lower().endswith(('.mp4','.webm','.mov')) %}<video src="{{ m }}" controls></video>{% else %}<img src="{{ m }}" alt="">{% endif %}<label><input type="checkbox" name="remove_media" value="{{ m }}"> Remove</label></div>{% endfor %}</div>
+<div class="form-footer"><a class="outline-btn" href="{{ url_for('admin_products') }}">Cancel</a><button class="btn">Save Product</button></div></section></form>
+<script>
+const input=document.getElementById('mediaInput'), grid=document.getElementById('previewGrid');
+input.addEventListener('change',()=>{[...input.files].forEach(f=>{const url=URL.createObjectURL(f),box=document.createElement('div');box.className='preview-item';let el;if(f.type.startsWith('video/')){el=document.createElement('video');el.controls=true;}else{el=document.createElement('img');}el.src=url;box.appendChild(el);const caption=document.createElement('small');caption.textContent=f.name;box.appendChild(caption);grid.appendChild(box);});});
+</script>{% endblock %}

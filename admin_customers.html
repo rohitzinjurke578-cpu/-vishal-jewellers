@@ -1,0 +1,5 @@
+
+{% extends "admin_base.html" %}{% block title %}Customers{% endblock %}{% block page_heading %}Customers{% endblock %}{% block admin_content %}
+<div class="page-actions"><p class="muted">Checkout के दौरान दर्ज हुए customers।</p></div><div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Mobile</th><th>Joined</th><th>Total Orders</th><th>Order Value</th></tr></thead><tbody>
+{% for c in customers %}{% set ns = namespace(n=0, total=0) %}{% for o in c.phone and [] %}{% endfor %}<tr><td><b>{{ c.name }}</b></td><td>{{ c.phone }}</td><td>{{ c.created_at.strftime('%d %b %Y') }}</td><td>—</td><td>—</td></tr>{% else %}<tr><td colspan="5">No customers yet.</td></tr>{% endfor %}
+</tbody></table></div><p class="muted small pad">यह शुरुआती customer register है। फोन नंबर का उपयोग केवल order lookup के लिए करें और ग्राहक डेटा सुरक्षित रखें।</p></div>{% endblock %}

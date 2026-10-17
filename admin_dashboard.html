@@ -1,0 +1,22 @@
+
+{% extends "admin_base.html" %}{% block title %}Dashboard{% endblock %}{% block page_heading %}Dashboard{% endblock %}
+{% block admin_content %}
+<div class="welcome-strip"><div><h2>Welcome back 👋</h2><p>यहाँ आपके store का आज का overview है।</p></div><a class="btn" href="{{ url_for('product_form') }}">＋ Add Product</a></div>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-top"><span>Total Sales</span><span class="stat-icon">₹</span></div><strong>₹{{ '%.0f'|format(total_sales) }}</strong><small>All non-cancelled orders</small></div>
+<div class="stat-card"><div class="stat-top"><span>Total Orders</span><span class="stat-icon">▣</span></div><strong>{{ orders_count }}</strong><small>{{ pending }} pending orders</small></div>
+<div class="stat-card"><div class="stat-top"><span>Customers</span><span class="stat-icon">♙</span></div><strong>{{ customers_count }}</strong><small>Unique checkout numbers</small></div>
+<div class="stat-card"><div class="stat-top"><span>Products</span><span class="stat-icon">◇</span></div><strong>{{ products_count }}</strong><small>Active catalog items</small></div>
+</div>
+<div class="sales-period-grid"><div class="period-card"><span>Today</span><strong>₹{{ '%.0f'|format(today_sales) }}</strong></div><div class="period-card"><span>This week</span><strong>₹{{ '%.0f'|format(week_sales) }}</strong></div><div class="period-card"><span>This month</span><strong>₹{{ '%.0f'|format(month_sales) }}</strong></div><div class="period-card"><span>Pending Orders</span><strong>{{ pending }}</strong></div></div>
+<div class="dashboard-grid"><section class="panel chart-panel"><div class="panel-heading"><div><h3>Sales overview</h3><p>Last 7 days · based on recorded orders</p></div><span class="live-dot">● Live data</span></div><canvas id="salesChart" height="130"></canvas></section>
+<section class="panel"><div class="panel-heading"><div><h3>Stock alerts</h3><p>Products with 5 or fewer units</p></div><a href="{{ url_for('admin_products') }}">View all ↗</a></div>
+{% for p in low_stock %}<div class="mini-row">{% if p.image %}<img src="{{ p.image }}" alt="">{% else %}<div class="mini-placeholder">✦</div>{% endif %}<div class="mini-row-main"><b>{{ p.name }}</b><small>{{ p.category }}</small></div><span class="stock-badge {% if p.stock == 0 %}danger{% endif %}">{{ p.stock }} left</span></div>{% else %}<p class="muted">No low-stock alerts. Nice!</p>{% endfor %}</section></div>
+<div class="dashboard-grid"><section class="panel"><div class="panel-heading"><div><h3>Best-selling products</h3><p>Ranked by units in recorded orders</p></div><a href="{{ url_for('admin_products') }}">Manage ↗</a></div>
+{% for p in best_products %}<div class="mini-row">{% if p.image %}<img src="{{ p.image }}" alt="">{% else %}<div class="mini-placeholder">✦</div>{% endif %}<div class="mini-row-main"><b>{{ p.name }}</b><small>₹{{ '%.0f'|format(p.price) }}</small></div><span class="stock-badge">{{ p.stock }} in stock</span></div>{% else %}<p class="muted">Add products to see this list.</p>{% endfor %}</section>
+<section class="panel"><div class="panel-heading"><div><h3>Recent orders</h3><p>Latest customer activity</p></div><a href="{{ url_for('admin_orders') }}">View all ↗</a></div>
+{% for o in recent_orders %}<div class="order-mini"><div><b>#{{ o.id }} · {{ o.customer_name }}</b><small>{{ o.created_at.strftime('%d %b, %I:%M %p') }}</small></div><div class="order-mini-right"><b>₹{{ '%.0f'|format(o.total) }}</b><span class="status-pill">{{ o.status }}</span></div></div>{% else %}<p class="muted">अभी कोई order नहीं है।</p>{% endfor %}</section></div>
+<script>
+const ctx=document.getElementById('salesChart');
+new Chart(ctx,{type:'line',data:{labels:{{ graph_labels|safe }},datasets:[{label:'Sales (₹)',data:{{ graph_values|safe }},borderColor:'#b10d22',backgroundColor:'rgba(177,13,34,.10)',fill:true,tension:.35,pointRadius:3,pointBackgroundColor:'#b10d22'}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#f0edf0'}},x:{grid:{display:false}}}}});
+</script>{% endblock %}
