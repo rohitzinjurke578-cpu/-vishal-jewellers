@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ shop_name }} | Online Shopping</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f5f5f5; color: #222; }
+    header { background: #111; color: white; padding: 20px; }
+    header h1 { color: #e9bd63; margin: 0 0 12px; }
+    a { color: inherit; text-decoration: none; }
+    nav { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+    main { padding: 18px; max-width: 1200px; margin: auto; }
+    form { display: flex; gap: 8px; margin: 20px 0; }
+    input, button { padding: 12px; border-radius: 8px; border: 1px solid #ccc; }
+    input { flex: 1; min-width: 0; }
+    button { cursor: pointer; background: #171717; color: white; }
+    .products { display: grid; grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); gap: 14px; }
+    .card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 9px #0001; }
+    .card img, .card video { width: 100%; height: 190px; object-fit: cover; border-radius: 8px; }
+    .price { font-weight: bold; color: #986b12; }
+    .old { color: #777; text-decoration: line-through; }
+    .empty { padding: 25px; background: white; border-radius: 10px; }
+    footer { text-align: center; padding: 25px; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>{{ shop_name }}</h1>
+  <p>{{ announcement }}</p>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/cart">Cart ({{ cart_count }})</a>
+    <a href="/my-orders">My Orders</a>
+    <a href="/admin/login">Admin</a>
+  </nav>
+</header>
+<main>
+  <h2>हमारे प्रोडक्ट्स</h2>
+  <form method="get" action="/">
+    <input name="q" value="{{ search }}" placeholder="प्रोडक्ट खोजें...">
+    <button type="submit">Search</button>
+  </form>
+  <nav>
+    <a href="/">All Products</a>
+    {% for c in categories %}
+      <a href="/?category={{ c|urlencode }}">{{ c }}</a>
+    {% endfor %}
+  </nav>
+  <br>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+  {% endwith %}
+  {% if products %}
+  <div class="products">
+    {% for p in products %}
+    <article class="card">
+      <a href="/product/{{ p.id }}">
+        {% set media = p.media %}
+        {% set image = p.image %}
+        {% if image %}
+          <img src="{{ image }}" alt="{{ p.name }}" loading="lazy">
+        {% elif media %}
+          {% if media[0].lower().endswith(('.mp4','.webm','.mov')) %}
+            <video src="{{ media[0] }}" controls></video>
+          {% else %}
+            <img src="{{ media[0] }}" alt="{{ p.name }}" loading="lazy">
+          {% endif %}
+        {% else %}
+          <div class="empty">No Image</div>
+        {% endif %}
+        <h3>{{ p.name }}</h3>
+      </a>
+      <p>{{ p.description }}</p>
+      <p class="price">₹{{ "%.2f"|format(p.price) }}
+        {% if p.mrp > p.price %}
+          <span class="old">₹{{ "%.2f"|format(p.mrp) }}</span>
+          <br><small>{{ p.discount }}% OFF</small>
+        {% endif %}
+      </p>
+      <p>{{ "In Stock" if p.stock > 0 else "Out of Stock" }}</p>
+      {% if p.stock > 0 %}
+      <form method="post" action="/cart/add/{{ p.id }}">
+        <button type="submit">Add to Cart</button>
+      </form>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="empty">अभी कोई प्रोडक्ट नहीं है। एडमिन पैनल से प्रोडक्ट जोड़ें।</div>
+  {% endif %}
+</main>
+<footer>{{ shop_name }} · Online Shopping</footer>
+</body>
+</html>
